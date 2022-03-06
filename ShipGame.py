@@ -45,7 +45,7 @@ class ShipGame:
         self._player_second_board = []
         self._player_second_ships = []
 
-        self._current_state = "GAME_UNFINISHED"
+        self._current_state = "UNFINISHED"
         self._turn = "first"
         self._winner = None
 
@@ -87,13 +87,11 @@ class ShipGame:
                 # Puts 1 on the grid
                 if orientation == "R":
                     ship_cords = self.place_horizontal(self._player_first_board, ship_length, coordinates)
-                    print(ship_cords)
                     # There is space to put ship
                     player_first_ship = Ship("first", coordinates, ship_cords, ship_length)
                     self._player_first_ships.append(player_first_ship)
                 elif orientation == "C":
                     ship_cords = self.place_vertical(self._player_first_board, ship_length, coordinates)
-                    print(ship_cords)
                     # There is space to put ship
                     player_first_ship = Ship("first", coordinates, ship_cords, ship_length)
                     self._player_first_ships.append(player_first_ship)
@@ -104,14 +102,12 @@ class ShipGame:
                 # Puts 1 on the grid
                 if orientation == "R":
                     ship_cords = self.place_horizontal(self._player_second_board, ship_length, coordinates)
-                    print(ship_cords)
                     # There is space to put ship
                     player_second_ship = Ship("second", coordinates, ship_cords, ship_length)
                     self._player_second_ships.append(player_second_ship)
 
                 elif orientation == "C":
                     ship_cords = self.place_vertical(self._player_second_board, ship_length, coordinates)
-                    print(ship_cords)
                     # There is space to put ship
                     player_second_ship = Ship("first", coordinates, ship_cords, ship_length)
                     self._player_second_ships.append(player_second_ship)
@@ -236,6 +232,8 @@ class ShipGame:
             for ship in targeted_ships:
                 if target_coordinates in ship.get_all_coordinates():
                     self.hit_ship(player, target_coordinates)
+            self.switch_turn()
+            return True
         else:
             return False
 
