@@ -222,7 +222,7 @@ class ShipGame:
 
     def fire_torpedo(self, player, target_coordinates):
         """Fire a torpedo at the coordinates on their opponent’s grid"""
-        if self._turn == player and self._current_state == "GAME_UNFINISHED":
+        if self._turn == player and self._current_state == "UNFINISHED":
             targeted_ships = None
             if player == "first":
                 targeted_ships = self._player_second_ships
