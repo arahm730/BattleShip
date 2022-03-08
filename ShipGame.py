@@ -1,6 +1,6 @@
 # Author: Athiqur Rahman
 # GitHub username: arahm730
-# Date: 3/5/2022
+# Date: 3/7/2022
 # Description: A game of battleship is created using the Ship and ShipGame classes.
 
 class Ship:
@@ -82,7 +82,7 @@ class ShipGame:
         incorporate the Ship class to create a ship object. It will also place an “X” on that specific square
         on the board to represent a ship’s square."""
 
-        if player == "first":
+        if player == "first" and ship_length >= 2:
             if self.check_ship_fits(self._player_first_board, ship_length, coordinates, orientation):
                 # Puts 1 on the grid
                 if orientation == "R":
@@ -97,7 +97,7 @@ class ShipGame:
                     self._player_first_ships.append(player_first_ship)
                 return True
 
-        elif player == "second":
+        elif player == "second" and ship_length >= 2:
             if self.check_ship_fits(self._player_second_board, ship_length, coordinates, orientation):
                 # Puts 1 on the grid
                 if orientation == "R":
@@ -273,23 +273,3 @@ class ShipGame:
             return len(self._player_first_ships)
         elif player == "second":
             return len(self._player_second_ships)
-
-# game = ShipGame()
-# game.place_ship('first', 5, 'B2', 'C')
-# game.place_ship('first', 2, 'I8', 'R')
-# game.place_ship('second', 3, 'H2', 'C')
-# game.place_ship('second', 2, 'A1', 'C')
-# game.place_ship('first', 8, 'H2', 'R')
-# game.fire_torpedo('first', 'I2')
-# game.fire_torpedo('second', 'A1')
-
-#print(game.get_current_state())
-
-#game.display_board("first")
-#game.display_board("second")
-
-# print(game._player_second_ships[0].get_health())
-
-#game.display_board("second")
-
-
