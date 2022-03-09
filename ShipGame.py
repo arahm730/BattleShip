@@ -1,6 +1,6 @@
 # Author: Athiqur Rahman
 # GitHub username: arahm730
-# Date: 3/7/2022
+# Date: 3/8/2022
 # Description: A game of battleship is created using the Ship and ShipGame classes.
 
 class Ship:
@@ -23,16 +23,19 @@ class Ship:
         return self._health
 
     def take_damage(self):
-        """Purpose: The purpose of this method is to decrement the ship’s overall health. """
+        """Decrements the ship’s overall health. """
         self._health -= 1
 
     def get_all_coordinates(self):
+        """Getter method to return all coordinates of the ship."""
         return self._all_coordinates
 
     def get_damaged_squares(self):
+        """Getter method to return the ship's damaged squares"""
         return self._damaged_squares
 
     def add_damaged_square(self, square):
+        """Adds a square to the list of damaged squares"""
         self._damaged_squares.append(square)
 
 
@@ -53,13 +56,15 @@ class ShipGame:
         self.create_board(self._player_second_board)
 
     def create_board(self, player_board):
+        """Creates a 10x10 board"""
         for index in range(10):
             rows = []
             for column in range(10):
-                rows.append(0)
+                rows.append('_')
             player_board.append(rows)
 
     def display_board(self, player):
+        """Displays the 10x10 board for the chosen user"""
         if player == "first":
             for lst in self._player_first_board:
                 print(lst)
@@ -71,16 +76,15 @@ class ShipGame:
             print("\n")
 
     def switch_turn(self):
-        """The purpose of this method is to switch turns. It updates the turn to the other player."""
+        """Updates the turn to the other player."""
         if self._turn == "first":
             self._turn = "second"
         else:
             self._turn = "second"
 
     def place_ship(self, player, ship_length, coordinates, orientation):
-        """Purpose: The purpose of this method is for each player to place ships on their game board. It will
-        incorporate the Ship class to create a ship object. It will also place an “X” on that specific square
-        on the board to represent a ship’s square."""
+        """Allows each player to place ships on their game board. It will incorporate the Ship class to create
+        a ship object. It will also place an “X” on that specific square on the board to represent a ship’s square."""
 
         if player == "first" and ship_length >= 2:
             if self.check_ship_fits(self._player_first_board, ship_length, coordinates, orientation):
@@ -116,7 +120,7 @@ class ShipGame:
         return False
 
     def place_horizontal(self, player_board, ship_length, coordinates):
-        """Replaces horizontal squares with 1 and returns the coordinates of each replaced square"""
+        """Replaces the chosen horizontal squares with X and returns the coordinates of each replaced square"""
         row = coordinates[0]
         column = int(coordinates[1]) - 1
         letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
@@ -125,20 +129,20 @@ class ShipGame:
         ship_cords = []
         starting_index = column
         for i in range(ship_length):
-            player_board[board_row][starting_index] = 1
+            player_board[board_row][starting_index] = 'X'
             ship_cords.append(row + str(starting_index))
             starting_index += 1
         return ship_cords
 
     def place_vertical(self, player_board, ship_length, coordinates):
-        """Replaces vertical squares with 1 and returns the coordinates of each replaced square"""
+        """Replaces the chosen vertical squares with X and returns the coordinates of each replaced square"""
         row = coordinates[0]
         column = int(coordinates[1]) - 1
         letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
         board_row = letters.index(row)  # E3 will be the 5th row
         ship_cords = []
         for i in range(ship_length):
-            player_board[board_row][column] = 1
+            player_board[board_row][column] = 'X'
             ship_cords.append(letters[board_row] + str(column+1))
             board_row += 1
         return ship_cords
@@ -174,10 +178,10 @@ class ShipGame:
 
         # Checks rest of column starting at column number.
         for i in searchable_column:
-            if i == 0:
+            if i == '_':
                 current_available_space += 1
                 total_available_space = max(total_available_space, current_available_space)
-            if i != 0:
+            if i != '_':
                 current_available_space = 0
                 valid_placement = False
 
@@ -186,7 +190,7 @@ class ShipGame:
 
         return False
 
-    def check_row(self, player_board, ship_length, coordinates):    #CHECK BUGS
+    def check_row(self, player_board, ship_length, coordinates):
         """Check if a ship can fit a specific row"""
         row = coordinates[0]
         column = int(coordinates[1]) - 1
@@ -204,10 +208,10 @@ class ShipGame:
 
         # Checks rest of row starting at column number. E3 means starting at 3rd element in list up to last element
         for i in searchable_space[:ship_length]:
-            if i == 0:
+            if i == '_':
                 current_available_space += 1
                 total_available_space = max(total_available_space, current_available_space)
-            if i != 0:
+            if i != '_':
                 current_available_space = 0
                 valid_placement = False
 
