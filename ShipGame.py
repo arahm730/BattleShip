@@ -258,18 +258,20 @@ class ShipGame:
                     ship.take_damage()
 
                     if ship.get_health() == 0:
-                        self.sink_ship(self, player, ship)
+                        print(ship)
+                        print(self._player_first_ships)
+                        self.sink_ship(player, ship)
 
     def sink_ship(self, player, sunk_ship):
-        """”Sink a player’s ship. It will decrement the player’s ship count by 1."""
-        if player == "first":
-            self._player_first_ships.remove(sunk_ship)
-            if len(self._player_first_ships) == 0:
-                self._current_state = "SECOND_WON"
-        elif player == "second":
+        """”Sink opponent's ship. It will decrement the opponent's ship count by 1."""
+        if player == "first":           # Player first sinks player second's ship
             self._player_second_ships.remove(sunk_ship)
             if len(self._player_second_ships) == 0:
                 self._current_state = "FIRST_WON"
+        elif player == "second":        # Player second sinks player first's ship
+            self._player_first_ships.remove(sunk_ship)
+            if len(self._player_first_ships) == 0:
+                self._current_state = "SECOND_WON"
 
     def get_nums_ships_remaining(self, player):
         """Integer specifying ships remaining for the specified player"""
