@@ -1,7 +1,9 @@
 # Author: Athiqur Rahman
 # GitHub username: arahm730
-# Date: 3/9/2022
-# Description: A game of battleship is created using the Ship and ShipGame classes.
+# Date: 3/10/2022
+# Description: A game of battleship is created using the Ship and ShipGame classes. Each player will have a 10x10 grid
+# where an X on the grid represents a square of the ship and an O on the grid represents a square of the ship that
+# has been damaged by an opponent's torpedo
 
 class Ship:
     """Ship class to represent a ship that will be used in ShipGame."""
@@ -31,7 +33,7 @@ class Ship:
         return self._health
 
     def take_damage(self):
-        """Decrements the ship’s overall health."""
+        """Decrements the ship’s health by 1."""
         self._health -= 1
 
     def get_all_coordinates(self):
@@ -115,32 +117,29 @@ class ShipGame:
         """
         if player == "first" and ship_length >= 2:
             if self.check_ship_fits(self._player_first_board, ship_length, coordinates, orientation):
-                # Puts 1 on the grid
+                # There is available space to place the ship
                 if orientation == "R":
                     ship_cords = self.place_horizontal(self._player_first_board, ship_length, coordinates)
-                    # There is space to put ship
+                    # Creates a Ship object and adds it to the player's list of ships
                     player_first_ship = Ship("first", coordinates, ship_cords, ship_length)
                     self._player_first_ships.append(player_first_ship)
+
                 elif orientation == "C":
                     ship_cords = self.place_vertical(self._player_first_board, ship_length, coordinates)
-                    # There is space to put ship
                     player_first_ship = Ship("first", coordinates, ship_cords, ship_length)
                     self._player_first_ships.append(player_first_ship)
                 return True
 
         elif player == "second" and ship_length >= 2:
             if self.check_ship_fits(self._player_second_board, ship_length, coordinates, orientation):
-                # Puts 1 on the grid
                 if orientation == "R":
                     ship_cords = self.place_horizontal(self._player_second_board, ship_length, coordinates)
-                    # There is space to put ship
                     player_second_ship = Ship("second", coordinates, ship_cords, ship_length)
                     self._player_second_ships.append(player_second_ship)
 
                 elif orientation == "C":
                     ship_cords = self.place_vertical(self._player_second_board, ship_length, coordinates)
-                    # There is space to put ship
-                    player_second_ship = Ship("first", coordinates, ship_cords, ship_length)
+                    player_second_ship = Ship("second", coordinates, ship_cords, ship_length)
                     self._player_second_ships.append(player_second_ship)
                 return True
 
@@ -164,9 +163,9 @@ class ShipGame:
         ship_cords = []
         starting_index = column
 
-        for i in range(ship_length):
+        for number in range(ship_length):
             player_board[board_row][starting_index] = 'X'
-            ship_cords.append(row + str(starting_index))
+            ship_cords.append(row + str(starting_index+1))
             starting_index += 1
         return ship_cords
 
@@ -201,6 +200,7 @@ class ShipGame:
             player_board: str representing the board belonging to the player
             ship_length: int representing the length of the ship
             coordinates: str representing the coordinates of the square closest to A1 where the ship will occupy
+            orientation: str representing the orientation of the ship (either C or R)
         Returns:
             True: if ships fits either the column or the row
             False: otherwise
@@ -232,7 +232,7 @@ class ShipGame:
         board_row = letters.index(row)
 
         searchable_column = []
-        for i in range(ship_length):
+        for i in range(9-board_row+1):          # Checks from current row to last row J
             searchable_column.append(player_board[board_row:][i][column])
 
         valid_placement = True
@@ -282,7 +282,7 @@ class ShipGame:
         if len(searchable_space) < ship_length:
             return False
 
-        # Checks rest of row starting at column number. E3 means starting at 3rd element in list up to last element
+        # Checks rest of row starting at column number. E3 means starting at 2nd index in list up to last element
         for i in searchable_space[:ship_length]:
             if i == '_':
                 current_available_space += 1
@@ -305,11 +305,11 @@ class ShipGame:
         Description:
             Fire a torpedo at the coordinates on their opponent’s grid
         Parameters:
-            player: str representing the player whose torpedo has hit the opponent's ship
+            player: str representing the player whose torpedo is firing
             target_coordinates: str representing the coordinates where the torpedo was fired
         Returns:
             False: if it's not the player's turn or if the game has already been won
-            True: otherwise, and records the move, updates the turn, and updates current state
+            True: otherwise, after recording the move, updating the turn, and updating current state
         """
         if self._turn == player and self._current_state == "UNFINISHED":
             targeted_ships = None
@@ -319,7 +319,7 @@ class ShipGame:
                 targeted_ships = self._player_first_ships
 
             for ship in targeted_ships:
-                if target_coordinates in ship.get_all_coordinates():
+                if target_coordinates in ship.get_all_coordinates():    # Torpedo has hit a ship
                     self.hit_ship(player, target_coordinates)
 
             self.switch_turn()
@@ -337,11 +337,13 @@ class ShipGame:
             target_coordinates: str representing the coordinates where the torpedo was fired
         """
         targeted_ships = None
-
+        targeted_board = None
         if player == "first":
             targeted_ships = self._player_second_ships
+            targeted_board = self._player_second_board
         elif player == "second":
             targeted_ships = self._player_first_ships
+            targeted_board = self._player_first_board
 
         # Loops through each Ship object in the opponent's list of Ship objects
         for ship in targeted_ships:
@@ -351,9 +353,26 @@ class ShipGame:
                 if target_coordinates not in damaged_squares:
                     ship.add_damaged_square(target_coordinates)
                     ship.take_damage()
+                    # Replace the X on the grid with a O
+                    self.update_grid_square(targeted_board, target_coordinates)
                     if ship.get_health() == 0:
                         # All the squares of a ship have been hit
                         self.sink_ship(player, ship)
+
+    def update_grid_square(self, player_board, coordinates):
+        """
+        Description:
+            Updates a square on the board from X to O if it has been hit
+        Parameters:
+            player_board: str representing the board belonging to the player
+            coordinates: str representing the coordinates where the torpedo was fired
+        """
+        row = coordinates[0]
+        column = int(coordinates[1]) - 1
+        letters = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
+        board_row = letters.index(row)  # C4 will be the 3rd row 4th column (or vertical index 2 and horizontal index 3)
+        player_board[board_row][column] = "O"
+
 
     def sink_ship(self, player, sunk_ship):
         """
